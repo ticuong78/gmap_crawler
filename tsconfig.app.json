@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "rootDir": "src/interface",
+    "rootDir": "src/renderer",
+    "outDir": "dist",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "esnext",
     "useDefineForClassFields": true,
@@ -25,5 +26,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/interface/**/*"] // Toàn bộ src
+  "include": ["src/renderer/**/*", "global.d.ts"] // Toàn bộ src
 }

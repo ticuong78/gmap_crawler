@@ -3,16 +3,16 @@
   "private": true,
   "type": "module",
   "packageManager": "yarn@4.12.0",
-  "main": "dist-electron/main.cjs",
+  "main": "dist-electron/src/main/index.cjs",
   "author": {
     "name": "Lê Phạm Hùng Cường",
     "email": "cuongdayne17@gmail.com",
     "url": "https://facebook.com/hades.rander"
   },
-  "description": "Ứng dụng dùng để Scrape thông tin thông qua GMap bằng cách vận dụng tính năng Chromium của Electron",
+  "description": "Ứng dụng dùng để Scrape thông tin thông qua Gmap bằng cách vận dụng tính năng Chromium của Electron",
   "scripts": {
     "vite:dev": "vite",
-    "elec:dev": "tsc -b tsconfig.electron.json && electron --inspect=9222 dist-electron/main.cjs",
+    "elec:dev": "tsc -b tsconfig.electron.json --force && electron --inspect=9222 dist-electron/src/main/index.cjs",
     "clean": "rimraf dist dist-electron",
     "dev": "yarn clean && concurrently \"yarn vite:dev\" \"yarn elec:dev\""
   },
@@ -30,6 +30,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
+    "dotenv": "^17.3.1",
     "electron": "^41.0.3",
     "electron-forge": "^5.2.4",
     "rimraf": "^6.1.3",
