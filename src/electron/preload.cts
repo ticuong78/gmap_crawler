@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-contextBridge.exposeInMainWorld("windowAPI", {
-  openGMap: () => ipcRenderer.send("open-gmap"),
+contextBridge.exposeInMainWorld("gmapAPI", {
+  openGMap: (showWindow: boolean = true) =>
+    ipcRenderer.send("gmap:open", showWindow),
+  searchGMap: (keyword: string) => ipcRenderer.send("gmap:search", keyword),
 });

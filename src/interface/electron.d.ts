@@ -2,8 +2,9 @@ export {};
 
 declare global {
   interface Window {
-    windowAPI: {
-      openGMap: () => void;
+    gmapAPI: {
+      openGMap: (showWindow: boolean = true) => void;
+      searchGMap: (keyword: string) => void;
     };
   }
 }
