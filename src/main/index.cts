@@ -18,7 +18,8 @@ app.whenReady().then(async () => {
   await setupGmap(mainWindow);
 
   if (isDev) await mainWindow.loadURL("http://localhost:5173");
-  else await mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
+  else
+    await mainWindow.loadFile(path.join(__dirname, "../../../dist/index.html"));
 });
 
 app.on("window-all-closed", () => {
