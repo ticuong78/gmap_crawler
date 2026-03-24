@@ -2715,6 +2715,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-format@npm:^4.0.14":
+  version: 4.0.14
+  resolution: "date-format@npm:4.0.14"
+  checksum: 10c0/1c67a4d77c677bb880328c81d81f5b9ed7fbf672bdaff74e5a0f7314b21188f3a829b06acf120c70cc1df876a7724e3e5c23d511e86d64656a3035a76ac3930b
+  languageName: node
+  linkType: hard
+
 "debug@npm:3.1.0":
   version: 3.1.0
   resolution: "debug@npm:3.1.0"
@@ -3916,6 +3923,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"flatted@npm:^3.2.7":
+  version: 3.4.2
+  resolution: "flatted@npm:3.4.2"
+  checksum: 10c0/a65b67aae7172d6cdf63691be7de6c5cd5adbdfdfe2e9da1a09b617c9512ed794037741ee53d93114276bff3f93cd3b0d97d54f9b316e1e4885dde6e9ffdf7ed
+  languageName: node
+  linkType: hard
+
 "flatten-packages@npm:^0.1.4":
   version: 0.1.4
   resolution: "flatten-packages@npm:0.1.4"
@@ -4568,6 +4582,7 @@ __metadata:
     dotenv: "npm:^17.3.1"
     electron: "npm:^41.0.3"
     electron-forge: "npm:^5.2.4"
+    log4js: "npm:^6.9.1"
     puppeteer-core: "npm:^24.40.0"
     puppeteer-in-electron: "npm:^3.0.5"
     react: "npm:^19.2.4"
@@ -5792,6 +5807,19 @@ __metadata:
     strip-ansi: "npm:^7.0.1"
     wrap-ansi: "npm:^8.0.1"
   checksum: 10c0/1050ea2027e80f32e132aace909987cb00c2719368c78b82ffca681a5b3f4020eeb5f4b4e310c47c35c6c36aff258c1d1bc51485ac44d6fdac9eb0a4275c539f
+  languageName: node
+  linkType: hard
+
+"log4js@npm:^6.9.1":
+  version: 6.9.1
+  resolution: "log4js@npm:6.9.1"
+  dependencies:
+    date-format: "npm:^4.0.14"
+    debug: "npm:^4.3.4"
+    flatted: "npm:^3.2.7"
+    rfdc: "npm:^1.3.0"
+    streamroller: "npm:^3.1.5"
+  checksum: 10c0/05846e48f72d662800c8189bd178c42b4aa2f0c574cfc90a1942cf90b76f621c44019e26796c8fd88da1b6f0fe8272cba607cbaad6ae6ede50a7a096b58197ea
   languageName: node
   linkType: hard
 
@@ -8345,6 +8373,17 @@ __metadata:
   version: 2.2.0
   resolution: "stream-buffers@npm:2.2.0"
   checksum: 10c0/14a351f0a066eaa08c8c64a74f4aedd87dd7a8e59d4be224703da33dca3eb370828ee6c0ae3fff59a9c743e8098728fc95c5f052ae7741672a31e6b1430ba50a
+  languageName: node
+  linkType: hard
+
+"streamroller@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "streamroller@npm:3.1.5"
+  dependencies:
+    date-format: "npm:^4.0.14"
+    debug: "npm:^4.3.4"
+    fs-extra: "npm:^8.1.0"
+  checksum: 10c0/0bdeec34ad37487d959ba908f17067c938f544db88b5bb1669497a67a6b676413229ce5a6145c2812d06959ebeb8842e751076647d4b323ca06be612963b9099
   languageName: node
   linkType: hard
 

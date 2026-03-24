@@ -17,6 +17,7 @@
     "dev": "yarn clean && concurrently \"yarn vite:dev\" \"yarn elec:dev\""
   },
   "dependencies": {
+    "log4js": "^6.9.1",
     "puppeteer-core": "^24.40.0",
     "puppeteer-in-electron": "^3.0.5",
     "react": "^19.2.4",
