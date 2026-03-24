@@ -1,4 +1,4 @@
-import { LogLevel } from "../entities/LogLevel";
+import { LogLevel } from "../../entities/enums/LogLevel";
 
 export abstract class AbstractLogger {
   public log(msg: string, level: LogLevel) {}
