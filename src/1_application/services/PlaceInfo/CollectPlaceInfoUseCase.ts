@@ -1,7 +1,7 @@
-import { PlaceInfo } from "../../../domain/entities/PlaceInfo";
-import { PlaceInfoTarget } from "../../entities/PlaceInfo/PlaceInfoTarget";
+import { PlaceInfo } from "../../../0_domain/entities/PlaceInfo";
 import { AbstractLogger } from "../../ports/Logger/AbstractLogger";
 import { IPlaceInfoCrawler } from "../../ports/PlaceInfo/IPlaceInfoCrawler";
+import { PlaceInfoTarget } from "../../types/PlaceInfo/PlaceInfoTarget";
 
 export class CollectPlaceInfoUseCase {
   constructor(

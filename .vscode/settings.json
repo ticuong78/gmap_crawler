@@ -1,0 +1,12 @@
+{
+  "material-icon-theme.folders.associations": {
+    "0_domain": "base",
+    "1_application": "app",
+    "2_infrastructure": "resource",
+    "ports": "routes",
+    "entities": "class",
+    "crawlers": "target",
+    "detectors": "cue",
+    "2_integration": "integration"
+  }
+}

@@ -1,6 +1,6 @@
-import { PlaceInfoTarget } from "../../entities/PlaceInfo/PlaceInfoTarget";
 import { AbstractLogger } from "../../ports/Logger/AbstractLogger";
 import { IPlaceInfoDetector } from "../../ports/PlaceInfo/IPlaceInfoDetector";
+import { PlaceInfoTarget } from "../../types/PlaceInfo/PlaceInfoTarget";
 
 export class DetectPlaceInfoUseCase {
   constructor(
@@ -8,10 +8,10 @@ export class DetectPlaceInfoUseCase {
     private readonly _placeInfoDetector: IPlaceInfoDetector,
   ) {}
 
-  collect(target: PlaceInfoTarget): boolean {
+  async detect(target: PlaceInfoTarget): Promise<boolean> {
     // yield this._placeInfoDetector.detect(target);
     // log if keep finding
 
-    return false;
+    return await this._placeInfoDetector.detect(target);
   }
 }
