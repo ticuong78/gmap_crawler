@@ -14,9 +14,13 @@
     "vite:dev": "vite",
     "elec:dev": "tsc -b tsconfig.electron.json --force && electron --inspect=9222 dist-electron/src/main/index.cjs",
     "clean": "rimraf dist dist-electron",
-    "dev": "yarn clean && concurrently \"yarn vite:dev\" \"yarn elec:dev\""
+    "dev": "yarn clean && concurrently \"yarn vite:dev\" \"yarn elec:dev\"",
+    "test": "jest --selectProjects unit",
+    "test:integration": "jest --selectProjects integration",
+    "test:all": "jest"
   },
   "dependencies": {
+    "electron": "^41.0.4",
     "log4js": "^6.9.1",
     "puppeteer-core": "^24.40.0",
     "puppeteer-in-electron": "^3.0.5",
@@ -26,16 +30,20 @@
   "devDependencies": {
     "@electron-forge/plugin-vite": "^7.11.1",
     "@tailwindcss/vite": "^4.2.2",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
     "dotenv": "^17.3.1",
-    "electron": "^41.0.3",
     "electron-forge": "^5.2.4",
     "jest": "^30.3.0",
+    "jest-environment-puppeteer": "^11.0.0",
+    "jest-puppeteer": "^11.0.0",
+    "puppeteer": "^24.40.0",
     "rimraf": "^6.1.3",
+    "ts-jest": "^29.4.6",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^8.0.1"

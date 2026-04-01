@@ -1,3 +1,5 @@
-export interface IDetector<TTarget = void, TResult = boolean> {
-  detect(target: TTarget): TResult;
+import { DetectExecutionOptions } from "../options/DetectExecutionOptions";
+
+export interface IDetector<TTarget = void, TResult = void> {
+  detect(target: TTarget, options?: DetectExecutionOptions): TResult;
 }

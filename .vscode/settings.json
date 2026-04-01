@@ -7,6 +7,12 @@
     "entities": "class",
     "crawlers": "target",
     "detectors": "cue",
-    "2_integration": "integration"
+    "2_integration": "simulations",
+    "loggers": "log"
+  },
+  "material-icon-theme.files.associations": {
+    "jest.config.ts": "jest",
+    "jest-puppeteer.config.ts": "jest",
+    "jest.setup.ts": "jest"
   }
 }
