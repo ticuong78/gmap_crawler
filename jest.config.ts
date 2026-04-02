@@ -11,15 +11,11 @@ const config: Config = {
     },
     {
       displayName: "integration",
-      preset: "jest-puppeteer",
+      preset: "ts-jest",
+      testEnvironment: "node",
       testMatch: ["<rootDir>/src/__tests__/**/*.integration.spec.ts"],
-      transform: {
-        "^.+\\.ts$": [
-          "ts-jest",
-          {
-            tsconfig: "<rootDir>/tsconfig.json",
-          },
-        ],
+      testEnvironmentOptions: {
+        electronOptions: ["--no-sandbox", "--disable-gpu", "--headless"],
       },
     },
   ],

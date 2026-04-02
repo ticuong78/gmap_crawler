@@ -1,5 +1,5 @@
 import { LogLevel } from "../../1_application/enums/LogLevel";
-import { ILogger } from "../../1_application/ports/Logger/ILogger";
+import { ILogger } from "../../1_application/ports/ILogger";
 import { AbstractLogger } from "../concretes/AbstractLogger";
 
 export class ConsoleLogger extends AbstractLogger implements ILogger {
