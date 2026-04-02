@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "src/renderer",
+    "rootDir": "src/legacy/renderer",
     "outDir": "dist",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "esnext",
@@ -26,5 +26,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/renderer/**/*", "global.d.ts"] // Toàn bộ src
+  "include": ["src/legacy/renderer/**/*", "global.d.ts"] // Toàn bộ src
 }

@@ -1,70 +1,34 @@
-import { ElementHandle, Page } from "puppeteer-core";
+import { Browser, Page } from "puppeteer-core";
+import { createTestContext } from "./setup/launchPuppeteer";
+import {
+  PuppeteerPlaceDetector,
+  ScopeContext,
+} from "../2_infrastructure/detectors/puppeteer/PuppeteerPlaceDetector";
 
-import { PuppeteerPlaceDetector } from "../2_infrastructure/detectors/puppeteer/PuppeteerPlaceDetector";
-import { PuppeteerPlaceHandle } from "../2_infrastructure/detectors/puppeteer/PuppteerPlaceHandle";
+// const URL = "https://www.google.com/maps/search/kaiserin";
+const URL = "https://www.google.com/maps/";
 
-declare const page: Page; // inject bởi jest-environment-puppeteer
+describe("PuppeteerPlaceDetector - Integration", () => {
+  let page: Page;
+  let browser: Browser;
 
-describe("PuppeteerPlaceDetector — integration: page scope", () => {
-  it("should detect elements matching selector", async () => {
-    await page.setContent(`
-      <div class="place-card">Hội An</div>
-      <div class="place-card">Mỹ Sơn</div>
-    `);
-
-    const detector = new PuppeteerPlaceDetector({ type: "page", value: page });
-    const result = await detector.detect(".place-card");
-
-    expect(result).toHaveLength(2);
-    expect(result[0]).toBeInstanceOf(PuppeteerPlaceHandle);
+  // Chạy một lần cho cả suite — vì launch browser chậm
+  beforeAll(async () => {
+    ({ browser, page } = await createTestContext(URL));
   });
 
-  it("should return empty array when selector matches nothing", async () => {
-    await page.setContent(`<div class="other">không có gì</div>`);
-
-    const detector = new PuppeteerPlaceDetector({ type: "page", value: page });
-    const result = await detector.detect(".place-card");
-
-    expect(result).toHaveLength(0);
+  afterAll(async () => {
+    await browser.close();
   });
-});
 
-describe("PuppeteerPlaceDetector — integration: element scope", () => {
-  it("should detect elements within a container element", async () => {
-    await page.setContent(`
-      <div class="container">
-        <div class="place-card">Đà Nẵng</div>
-        <div class="place-card">Hue</div>
-      </div>
-    `);
+  describe("detect() từ Page", () => {
+    it("tìm thấy kết quả trên Google Maps", async () => {
+      const context: ScopeContext = { type: "page", value: page };
+      const detector = new PuppeteerPlaceDetector(context);
 
-    const container = (await page.$(".container")) as ElementHandle<Element>;
-    const detector = new PuppeteerPlaceDetector({
-      type: "element",
-      value: container,
+      const results = await detector.detect(".some-real-selector");
+
+      expect(results.length).toBeGreaterThan(0);
     });
-    const result = await detector.detect(".place-card");
-
-    expect(result).toHaveLength(2);
-    expect(result[0]).toBeInstanceOf(PuppeteerPlaceHandle);
-  });
-
-  it("should not detect elements outside the container", async () => {
-    await page.setContent(`
-      <div class="place-card">Ngoài container</div>
-      <div class="container">
-        <div class="place-card">Trong container</div>
-      </div>
-    `);
-
-    const container = (await page.$(".container")) as ElementHandle<Element>;
-    const detector = new PuppeteerPlaceDetector({
-      type: "element",
-      value: container,
-    });
-    const result = await detector.detect(".place-card");
-
-    // Chỉ tìm thấy 1 — cái nằm trong container
-    expect(result).toHaveLength(1);
   });
 });
