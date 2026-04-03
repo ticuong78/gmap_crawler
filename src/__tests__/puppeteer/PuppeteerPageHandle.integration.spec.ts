@@ -1,22 +1,23 @@
 jest.setTimeout(30000);
 
 import { Browser, Page } from "puppeteer-core";
-import { createTestContext, teardown } from "../setup/launchPuppeteer";
 import { PuppeteerPageHandle } from "../../2_infrastructure/puppeteer/PuppeteerPageHandle";
-
-const GOOGLE_MAPS_URL: string = "https://www.google.com/maps";
+import * as ctx from "../setup/test-context";
+import { createTestContext, teardown } from "../setup/launchElectron";
 
 describe("PuppeteerPageHandle - Google Maps home", () => {
-  let browser: Browser;
   let page: Page;
+  let browser: Browser;
 
   beforeAll(async () => {
-    ({ browser, page } = await createTestContext(GOOGLE_MAPS_URL));
+    const ctxResult = await createTestContext(ctx.GOOGLE_MAP_URL);
+    browser = ctxResult.browser;
+    page = ctxResult.page;
   });
 
   afterAll(async () => {
-    await browser?.close();
     await browser?.disconnect();
+    await browser?.close();
     teardown();
   });
 
@@ -40,26 +41,25 @@ describe("PuppeteerPageHandle - Google Maps home", () => {
   });
 });
 
-const SEARCH_KEYWORD = "kaiserin";
-const GOOGLE_MAPS_QUERY_SEARCH_URL: string = `https://www.google.com/maps/search/${SEARCH_KEYWORD}`;
-
 describe("PuppeteerPageHandle - Google Maps search results", () => {
-  let browser: Browser;
   let page: Page;
+  let browser: Browser;
 
   beforeAll(async () => {
-    ({ browser, page } = await createTestContext(GOOGLE_MAPS_QUERY_SEARCH_URL));
+    const ctxResult = await createTestContext(ctx.GOOGLE_MAPS_QUERY_SEARCH_URL);
+    browser = ctxResult.browser;
+    page = ctxResult.page;
   });
 
   afterAll(async () => {
-    await browser?.close();
     await browser?.disconnect();
+    await browser?.close();
     teardown();
   });
 
   describe("findAll()", () => {
     it("returns result items when the selector is valid", async () => {
-      const selector = `xpath///div[@aria-label="Kết quả cho ${SEARCH_KEYWORD}"]//a/parent::*`;
+      const selector = `xpath///div[@aria-label="Kết quả cho ${ctx.SEARCH_KEYWORD}"]//a/parent::*`;
 
       const pageHandle = new PuppeteerPageHandle(page);
       const elementHandles = await pageHandle.findAll(selector);

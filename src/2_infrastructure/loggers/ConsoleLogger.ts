@@ -1,25 +1,24 @@
-import { LogLevel } from "../../1_application/enums/LogLevel";
-import { ILogger } from "../../1_application/ports/ILogger";
 import { AbstractLogger } from "../concretes/AbstractLogger";
 
-export class ConsoleLogger extends AbstractLogger implements ILogger {
-  log(msg: string, level: LogLevel): void {
-    throw new Error("Method not implemented.");
+export class ConsoleLogger extends AbstractLogger {
+  private format(level: string, msg: string): string {
+    const time = new Date().toISOString();
+    return `[${time}] [${level}] ${msg}`;
   }
 
   protected info(msg: string): void {
-    throw new Error("Method not implemented.");
+    console.info(this.format("INFO", msg));
   }
 
   protected warn(msg: string): void {
-    throw new Error("Method not implemented.");
+    console.warn(this.format("WARN", msg));
   }
 
   protected debug(msg: string): void {
-    throw new Error("Method not implemented.");
+    console.debug(this.format("DEBUG", msg));
   }
 
   protected error(msg: string): void {
-    throw new Error("Method not implemented.");
+    console.error(this.format("ERROR", msg));
   }
 }

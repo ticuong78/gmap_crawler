@@ -13,6 +13,8 @@
   "material-icon-theme.files.associations": {
     "jest.config.ts": "jest",
     "jest-puppeteer.config.ts": "jest",
-    "jest.setup.ts": "jest"
+    "jest.setup.ts": "jest",
+    "tsconfig.jest.json": "tsconfig",
+    "tsconfig.electron-test.json": "tsconfig"
   }
 }

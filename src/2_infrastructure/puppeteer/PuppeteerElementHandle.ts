@@ -1,4 +1,4 @@
-import { ElementHandle, Page } from "puppeteer-core";
+import { ElementHandle } from "puppeteer-core";
 import { IElementHandle } from "../../1_application/ports/IElementHandle";
 
 export class PuppeteerElementHandle implements IElementHandle {

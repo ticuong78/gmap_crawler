@@ -1,6 +1,7 @@
 import { spawn, ChildProcess } from "child_process";
 import * as puppeteer from "puppeteer-core";
 import * as path from "path";
+import { ConsoleLogger } from "../../2_infrastructure/loggers/ConsoleLogger";
 
 const electronPath = require("electron") as unknown as string;
 let electronProcess: ChildProcess;
@@ -64,6 +65,10 @@ export async function createTestContext(url: string) {
 
   await page.goto(url, { waitUntil: "networkidle2" });
   return { browser, page };
+}
+
+export function createLogger() {
+  return new ConsoleLogger();
 }
 
 export function teardown() {
