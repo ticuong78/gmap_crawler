@@ -6,15 +6,36 @@ export type TestingContext = {
   page: puppeteer.Page;
 };
 
+const CONNECTION_RETRY_DELAY_MS = 250;
+const CONNECTION_RETRY_COUNT = 20;
+
+async function delay(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function createTestingContext(
   environment: ElectronEnvironment,
 ): Promise<TestingContext> {
-  const browser = await puppeteer.connect({
-    browserURL: `http://localhost:${environment.getDebugPort()}`,
-  });
+  let lastError: unknown;
 
-  const pages = await browser.pages();
-  const page = pages[0] ?? (await browser.newPage());
+  for (let attempt = 1; attempt <= CONNECTION_RETRY_COUNT; attempt += 1) {
+    try {
+      const browser = await puppeteer.connect({
+        browserURL: `http://127.0.0.1:${environment.getDebugPort()}`,
+      });
 
-  return { browser, page };
+      const pages = await browser.pages();
+      const page = pages[0] ?? (await browser.newPage());
+
+      return { browser, page };
+    } catch (error) {
+      lastError = error;
+
+      if (attempt < CONNECTION_RETRY_COUNT) {
+        await delay(CONNECTION_RETRY_DELAY_MS);
+      }
+    }
+  }
+
+  throw lastError;
 }

@@ -5,15 +5,6 @@ import type { createTestingContext as createTestingContextFactory } from "./cont
 
 export {};
 
-type Teardownable = {
-  teardown?: () => Promise<void>;
-};
-
-type TestRuntime = {
-  testingContext?: Teardownable;
-  electronEnvironment?: Teardownable;
-};
-
 declare global {
   var SEARCH_KEYWORD: string;
   var GOOGLE_MAP_URL: string;
@@ -22,10 +13,15 @@ declare global {
   var createAndSetupElectronEnvironment: (
     options?: SingleOption[],
     env?: NodeJS.ProcessEnv,
-  ) => ElectronEnvironment;
+  ) => Promise<ElectronEnvironment>;
 
   var createLogger: typeof createLoggerFactory;
   var createTestingContext: typeof createTestingContextFactory;
 
-  var teardownTestRuntime: (runtime?: TestRuntime) => Promise<void>;
+  var teardownTestRuntime: (runtime?: {
+    testingContext?: { teardown?: () => Promise<void> | void };
+    electronEnvironment?: {
+      teardown?: () => Promise<number> | Promise<void> | void;
+    };
+  }) => Promise<void>;
 }

@@ -5,6 +5,10 @@ export type SingleOption = {
   value?: ElectronOptionValue;
 };
 
+function normalizeOptionKey(key: string): string {
+  return key.replace(/[-_]/g, "").toLowerCase();
+}
+
 export class ElectronOptions {
   constructor(private _options: SingleOption[]) {}
 
@@ -13,12 +17,18 @@ export class ElectronOptions {
   }
 
   remove(key: string): void {
-    this._options = this._options.filter((option) => option.key !== key);
+    const normalizedKey = normalizeOptionKey(key);
+
+    this._options = this._options.filter(
+      (option) => normalizeOptionKey(option.key) !== normalizedKey,
+    );
   }
 
   get(key: string): ElectronOptionValue | undefined {
+    const normalizedKey = normalizeOptionKey(key);
+
     for (const option of this._options) {
-      if (option.key === key) {
+      if (normalizeOptionKey(option.key) === normalizedKey) {
         return option.value;
       }
     }
@@ -53,5 +63,9 @@ export class ElectronOptions {
 
       return `--${kebabKey}=${option.value}`;
     });
+  }
+
+  toJSON(): SingleOption[] {
+    return this._options.map((option) => ({ ...option }));
   }
 }

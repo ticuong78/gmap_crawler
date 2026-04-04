@@ -4,16 +4,19 @@ import { createTestingContext } from "./context.setup";
 import { createElectronEnvironment } from "./electron.setup";
 import { createLogger } from "./logger.setup";
 
+const jestWorkerId = Number(process.env.JEST_WORKER_ID ?? "1");
+const remoteDebuggingPort = 9222 + Math.max(jestWorkerId - 1, 0);
+
 const electronOptions: SingleOption[] = [
-  { key: "RemoteDebuggingPort", value: 9222 },
+  { key: "RemoteDebuggingPort", value: remoteDebuggingPort },
   { key: "NoSandbox" },
   { key: "DisableGPU" },
   { key: "Lang", value: "vi-VN" },
 ];
 
 export async function teardownTestRuntime(runtime?: {
-  testingContext?: { teardown?: () => Promise<void> };
-  electronEnvironment?: { teardown?: () => Promise<void> };
+  testingContext?: { teardown?: () => Promise<void> | void };
+  electronEnvironment?: { teardown?: () => Promise<number> | Promise<void> | void };
 }) {
   await runtime?.testingContext?.teardown?.();
   await runtime?.electronEnvironment?.teardown?.();

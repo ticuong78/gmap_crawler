@@ -16,9 +16,12 @@ export class ElectronEnvironment {
   private readonly _env: NodeJS.ProcessEnv;
 
   constructor(options: SingleOption[], env?: NodeJS.ProcessEnv) {
+    const { ELECTRON_RUN_AS_NODE: _ignoredElectronRunAsNode, ...parentEnv } =
+      process.env;
+
     this._electronOptions = new ElectronOptions(options);
     this._env = {
-      ...process.env,
+      ...parentEnv,
       NODE_ENV: "test",
       LANG: "vi_VN.UTF-8",
       ...env,
@@ -44,29 +47,48 @@ export class ElectronEnvironment {
     return this._electronOptions.getRemoteDebuggingPort(9222);
   }
 
-  teardown(): number {
-    if (!this._electronProcess) return -1;
-    if (this._electronProcess.kill("SIGTERM")) return 1;
-    else return 0;
+  teardown(): Promise<number> {
+    const process = this._electronProcess;
+
+    if (!process) return Promise.resolve(-1);
+
+    return new Promise((resolve) => {
+      const finalize = (result: number): void => {
+        this._electronProcess = undefined;
+        resolve(result);
+      };
+
+      process.once("exit", () => finalize(1));
+      process.once("error", () => finalize(0));
+
+      if (!process.kill("SIGTERM")) {
+        finalize(0);
+      }
+    });
   }
 
   private buildArgs(compiledElectronPath: string): string[] {
-    return [...this._electronOptions.toArgs(), compiledElectronPath];
+    return [compiledElectronPath];
   }
 
   private spawnProcess(args: string[]): ChildProcess {
     const child = spawn(electronPath, args, {
-      env: this._env,
+      env: {
+        ...this._env,
+        TEST_ELECTRON_OPTIONS_JSON: JSON.stringify(this._electronOptions.toJSON()),
+      },
       stdio: ["ignore", "pipe", "pipe"],
     });
 
-    child.stdout?.on("data", (data: Buffer) => {
-      console.log("[electron stdout]", data.toString());
-    });
+    if (this._env.DEBUG_ELECTRON_TEST === "1") {
+      child.stdout?.on("data", (data: Buffer) => {
+        console.log("[electron stdout]", data.toString());
+      });
 
-    child.stderr?.on("data", (data: Buffer) => {
-      console.error("[electron stderr]", data.toString());
-    });
+      child.stderr?.on("data", (data: Buffer) => {
+        console.error("[electron stderr]", data.toString());
+      });
+    }
 
     return child;
   }
