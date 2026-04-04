@@ -1,31 +1,25 @@
 jest.setTimeout(30000);
 
-import { Browser, Page } from "puppeteer-core";
-
 import { IElementHandle } from "../../1_application/ports/IElementHandle";
 
 import { PuppeteerElementHandle } from "../../2_infrastructure/puppeteer/PuppeteerElementHandle";
 import { PuppeteerPageHandle } from "../../2_infrastructure/puppeteer/PuppeteerPageHandle";
 
-import * as ctx from "../setup/test-context";
-import { createTestContext, teardown } from "../setup/launchElectron";
-
 describe("PuppeteerElementHandle - Google Maps search results", () => {
-  let page: Page;
-  let browser: Browser;
   let searchResultPanelHandle: IElementHandle;
   let placeHandles: IElementHandle[];
+  let testingContext: ReturnType<typeof globalThis.createTestingContext>;
+  let electronEnv: ReturnType<
+    typeof globalThis.createAndSetupElectronEnvironment
+  >;
 
   beforeAll(async () => {
-    const { browser: testBrowser, page: testPage } = await createTestContext(
-      ctx.GOOGLE_MAPS_QUERY_SEARCH_URL,
-    );
+    electronEnv = await globalThis.createAndSetupElectronEnvironment();
+    testingContext = globalThis.createTestingContext(electronEnv);
+    await testingContext.page.goto(globalThis.GOOGLE_MAPS_QUERY_SEARCH_URL);
 
-    browser = testBrowser;
-    page = testPage;
-
-    const selector = `xpath///div[@aria-label="Kết quả cho ${ctx.SEARCH_KEYWORD}"]`;
-    const handle = await page.$(selector);
+    const selector = `xpath///div[@aria-label="Kết quả cho ${globalThis.SEARCH_KEYWORD}"]`;
+    const handle = await testingContext.page.$(selector);
 
     if (!handle) {
       throw new Error(
@@ -37,9 +31,10 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
   });
 
   afterAll(async () => {
-    await browser?.close();
-    await browser?.disconnect();
-    teardown(); // khong await tearDown, giu close va disconnect
+    await globalThis.teardownTestRuntime({
+      testingContext: testingContext,
+      electronEnvironment: electronEnv,
+    });
   });
 
   describe("find()", () => {
@@ -54,7 +49,7 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
     it("throws Not Found error when the selector is invalid", async () => {
       const selector =
         "xpath///span[text()='Bạn chưa xem hết danh sách này đâu nhé.']";
-      const pageHandle = new PuppeteerPageHandle(page);
+      const pageHandle = new PuppeteerPageHandle(testingContext.page);
 
       await expect(pageHandle.find(selector)).rejects.toThrow(
         `Not found: ${selector}`,
@@ -78,7 +73,7 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
 
       const expectedSamePlaceHandle = await placeHandle.click();
 
-      const detailPlace = await page.waitForSelector(
+      const detailPlace = await testingContext.page.waitForSelector(
         "xpath///div[contains(@aria-label, 'Các thao tác dành cho')]",
         {
           timeout: 2000,
