@@ -11,14 +11,14 @@
   },
   "description": "Ứng dụng dùng để Scrape thông tin thông qua Gmap bằng cách vận dụng tính năng Chromium của Electron",
   "scripts": {
-    "vite:dev": "vite",
-    "elec:dev": "tsc -b tsconfig.electron.json --force && electron --inspect=9222 dist-electron/src/main/index.cjs",
-    "clean": "rimraf dist dist-electron",
     "dev": "yarn clean && concurrently \"yarn vite:dev\" \"yarn elec:dev\"",
     "build:test-main": "tsc -p tsconfig.electron-test.json --module commonjs",
-    "test": "jest --selectProjects unit",
-    "test:integration": "yarn build:test-main && jest --selectProjects integration --detectOpenHandles",
-    "test:all": "jest"
+    "clean:dev": "rimraf dist dis-electron",
+    "clean:test": "rimraf dis-electron-test",
+    "clean": "yarn clean:test && yarn clean:dev",
+    "test:unit": "jest --selectProjects unit",
+    "test:integration": "yarn clean:test && yarn build:test-main && jest --selectProjects integration --detectOpenHandles",
+    "test": "yarn test:unit && yarn test:integration"
   },
   "dependencies": {
     "electron": "^41.0.4",
