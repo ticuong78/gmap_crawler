@@ -10,15 +10,10 @@ import {
   GOOGLE_MAPS_PLACE_LINK_SELECTOR,
   waitForGoogleMapsPlaceLinks,
 } from "@tests/integration/support/google-maps";
-import { shouldRunLiveGoogleMapsTests } from "@tests/integration/support/live-google-maps";
 import { PuppeteerElementHandle } from "@src/2_infrastructure/puppeteer/PuppeteerElementHandle";
 import { PuppeteerPageHandle } from "@src/2_infrastructure/puppeteer/PuppeteerPageHandle";
 
-const describeLiveGoogleMaps = shouldRunLiveGoogleMapsTests
-  ? describe
-  : describe.skip;
-
-describeLiveGoogleMaps("PuppeteerElementHandle - Google Maps search results", () => {
+describe("PuppeteerElementHandle - Google Maps search results", () => {
   let searchResultPanelHandle: IElementHandle;
   let placeHandles: IElementHandle[];
   let testingContext: Awaited<
@@ -273,3 +268,5 @@ describe("PuppeteerElementHandle - DOM fixture", () => {
     });
   });
 });
+
+

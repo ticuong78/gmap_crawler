@@ -7,15 +7,10 @@ import {
   GOOGLE_MAPS_PLACE_LINK_SELECTOR,
   waitForGoogleMapsPlaceLinks,
 } from "@tests/integration/support/google-maps";
-import { shouldRunLiveGoogleMapsTests } from "@tests/integration/support/live-google-maps";
 
 jest.setTimeout(60000);
 
-const describeLiveGoogleMaps = shouldRunLiveGoogleMapsTests
-  ? describe
-  : describe.skip;
-
-describeLiveGoogleMaps("PuppeteerPageHandle - Google Maps home", () => {
+describe("PuppeteerPageHandle - Google Maps home", () => {
   let testingContext: Awaited<
     ReturnType<typeof globalThis.createElectronTestingContext>
   >;
@@ -57,7 +52,7 @@ describeLiveGoogleMaps("PuppeteerPageHandle - Google Maps home", () => {
   });
 });
 
-describeLiveGoogleMaps("PuppeteerPageHandle - Google Maps search results", () => {
+describe("PuppeteerPageHandle - Google Maps search results", () => {
   let testingContext: Awaited<
     ReturnType<typeof globalThis.createElectronTestingContext>
   >;
@@ -151,3 +146,5 @@ describe("PuppeteerPageHandle - DOM fixture", () => {
     });
   });
 });
+
+
