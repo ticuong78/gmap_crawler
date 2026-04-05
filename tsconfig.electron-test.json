@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.electron-test.tsbuildinfo",
+    "rootDir": "tests/integration/runtime/electron",
+    "target": "es2022",
+    "module": "es2022",
+    "composite": true,
+    "types": ["node"],
+    "outDir": "./dist-electron-test",
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["tests/integration/runtime/electron/main.cts"]
+}

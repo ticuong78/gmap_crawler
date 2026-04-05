@@ -132,9 +132,8 @@ async function handleCrawl(keyword: string) {
       const feedItems = await feedContainer.$$("::-p-xpath(.//div[not(@*)])");
 
       if (feedItems.length === 0) {
-        throw new Error(
-          `Không có item nào trong kết quả tìm kiếm cho "${keyword}".`,
-        );
+        console.log("[INFO] Kết thúc scrape");
+        break;
       }
 
       for (const item of feedItems) {
@@ -155,26 +154,35 @@ async function handleCrawl(keyword: string) {
 
         processedNames.add(name);
 
-        await item.scrollIntoView();
-
-        console.log(`[DEBUG] Đang click vào: "${name}"`);
-
-        await delay(700); // chờ animation settle
-
         await item.click({
           delay: Math.max(200, gaussianRandom(600, 150)),
         });
 
-        console.log(`[DEBUG] Đã click, đang chờ popup...`);
+        console.log(`[DEBUG] Đã click, đang chờ popup cho ${name}...`);
 
         try {
-          const popUp = await gmapPage.waitForSelector(
-            // popup trên gmapPage chứ không hải trong item
-            `[role="main"][aria-label="${name}"]`,
-            {
-              timeout: 5000,
-            },
-          );
+          let popUp;
+
+          try {
+            popUp = await gmapPage.waitForSelector(
+              // popup trên gmapPage chứ không hải trong item
+              `[role="main"][aria-label="${name}"]`,
+              {
+                timeout: 5000,
+              },
+            );
+          } catch {
+            await item.click({
+              delay: Math.max(200, gaussianRandom(600, 150)),
+            });
+            popUp = await gmapPage.waitForSelector(
+              // popup trên gmapPage chứ không hải trong item
+              `[role="main"][aria-label="${name}"]`,
+              {
+                timeout: 5000,
+              },
+            );
+          }
 
           if (!popUp)
             throw Error(
@@ -249,22 +257,11 @@ async function handleCrawl(keyword: string) {
         });
       }
 
-      const isEnd =
-        (await feedContainer.evaluate(
-          (el, messages) =>
-            messages.some((msg) => el.textContent?.includes(msg)),
-          endMessages,
-        )) ?? false;
-
-      if (isEnd) {
-        break;
-      }
-
       await feedContainer.evaluate((el, px) => {
         el.scrollTop += px;
-      }, 400);
+      }, 1000);
 
-      await delay(3500);
+      await delay(3000);
     }
 
     sendGmapStatus("done");
