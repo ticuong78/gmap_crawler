@@ -16,8 +16,19 @@ export class PuppeteerElementHandle implements IElementHandle {
     return els.map((el) => new PuppeteerElementHandle(el));
   }
 
-  isVisible(): Promise<boolean> {
-    return this.handle.isVisible();
+  async isVisible(): Promise<boolean> {
+    return this.handle.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        style.opacity !== "0" &&
+        rect.width > 0 &&
+        rect.height > 0
+      );
+    });
   }
 
   isIntersectingViewport(): Promise<boolean> {
