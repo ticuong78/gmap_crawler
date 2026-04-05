@@ -1,9 +1,9 @@
-import { Queue } from "../../data_structure/Queue";
-import { ScrollExecutionOptions } from "../../options/ScrollExecutionOptions";
-import { IElementHandle } from "../../ports/IElementHandle";
-import { ILogger } from "../../ports/ILogger";
-import { IPageHandle } from "../../ports/IPageHandle";
-import { CollectPlaceUrlUseCase } from "../CollectPlaceUrlUseCase";
+﻿import { Queue } from "../../../../src/1_application/data_structure/Queue";
+import { ScrollExecutionOptions } from "../../../../src/1_application/options/ScrollExecutionOptions";
+import { IElementHandle } from "../../../../src/1_application/ports/IElementHandle";
+import { ILogger } from "../../../../src/1_application/ports/ILogger";
+import { IPageHandle } from "../../../../src/1_application/ports/IPageHandle";
+import { CollectPlaceUrlUseCase } from "../../../../src/1_application/usecases/CollectPlaceUrlUseCase";
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void;

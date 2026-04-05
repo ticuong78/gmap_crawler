@@ -1,11 +1,8 @@
-import * as path from "path";
-import { SingleOption } from "../utils";
-import {
-  comopseTestingContext,
-  createElectronTestingContext,
-} from "./context.setup";
-import { createElectronEnvironment } from "./electron.setup";
-import { createLogger } from "./logger.setup";
+﻿import * as path from "path";
+import { SingleOption } from "../../support/electron-options";
+import { createElectronTestingContext } from "../support/context";
+import { createElectronEnvironment } from "../support/electron-environment";
+import { createLogger } from "../support/logger";
 
 const jestWorkerId = Number(process.env.JEST_WORKER_ID ?? "1");
 const remoteDebuggingPort = 9222 + Math.max(jestWorkerId - 1, 0);
@@ -48,7 +45,6 @@ export default async function setupGlobals() {
   };
   globalThis.createElectronTestingContext = createElectronTestingContext;
   globalThis.createLogger = createLogger;
-  globalThis.comopseTestingContext = comopseTestingContext;
   globalThis.teardownTestRuntime = teardownTestRuntime;
 }
 

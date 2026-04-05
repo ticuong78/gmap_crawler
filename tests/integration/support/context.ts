@@ -1,7 +1,6 @@
-import * as puppeteer from "puppeteer-core";
-import { ElectronEnvironment } from "./electron.setup";
-import { existsSync, readFileSync } from "fs";
-import * as path from "path";
+﻿import * as puppeteer from "puppeteer-core";
+import { existsSync } from "fs";
+import { ElectronEnvironment } from "./electron-environment";
 
 export type TestingContext = {
   browser: puppeteer.Browser;
@@ -53,17 +52,6 @@ export async function tearDownTestingContext(
   }
 }
 
-export async function comopseTestingContext(
-  browser: puppeteer.Browser,
-  page: puppeteer.Page,
-): Promise<TestingContext> {
-  return Promise.resolve({
-    teardown: () => tearDownTestingContext(browser, page),
-    browser,
-    page,
-  });
-}
-
 export async function createElectronTestingContext(
   environment: ElectronEnvironment,
 ): Promise<TestingContext> {
@@ -107,14 +95,4 @@ export async function createNormalTestingContext(): Promise<TestingContext> {
     page,
     teardown: () => tearDownTestingContext(browser, page),
   };
-}
-
-export async function readMockAssets(mockingName: string) {
-  switch (mockingName) {
-    case "mockKaiserinSearchResultPage": {
-      return readFileSync(
-        path.join(__dirname, "../../assets/mockKaiserinSearchResultPage.html"),
-      ).toString();
-    }
-  }
 }

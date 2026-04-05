@@ -1,6 +1,6 @@
-import * as puppeteer from "puppeteer-core";
+﻿import * as puppeteer from "puppeteer-core";
 
-import { ILogger } from "../../1_application/ports/ILogger";
+import { ILogger } from "../../src/1_application/ports/ILogger";
 
 describe("CollectPlaceInfoUseCase - Mock Kaiserin Search Result Page", () => {
   let browser: puppeteer.Browser;

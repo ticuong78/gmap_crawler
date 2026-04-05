@@ -1,12 +1,12 @@
-jest.setTimeout(30000);
+﻿jest.setTimeout(30000);
 
-import { IElementHandle } from "../../1_application/ports/IElementHandle";
+import { IElementHandle } from "../../../../src/1_application/ports/IElementHandle";
 import {
   createNormalTestingContext,
   type TestingContext,
-} from "../setup/context.setup";
-import { PuppeteerElementHandle } from "../../2_infrastructure/puppeteer/PuppeteerElementHandle";
-import { PuppeteerPageHandle } from "../../2_infrastructure/puppeteer/PuppeteerPageHandle";
+} from "../../support/context";
+import { PuppeteerElementHandle } from "../../../../src/2_infrastructure/puppeteer/PuppeteerElementHandle";
+import { PuppeteerPageHandle } from "../../../../src/2_infrastructure/puppeteer/PuppeteerPageHandle";
 
 describe("PuppeteerElementHandle - Google Maps search results", () => {
   let searchResultPanelHandle: IElementHandle;
@@ -109,7 +109,7 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
 });
 
 describe("PuppeteerElementHandle - DOM fixture", () => {
-  let testingContext: TestingContext;
+  let testingContext: TestingContext | undefined;
   let pageHandle: PuppeteerPageHandle;
 
   beforeAll(async () => {
@@ -274,3 +274,4 @@ describe("PuppeteerElementHandle - DOM fixture", () => {
     });
   });
 });
+

@@ -1,10 +1,9 @@
-import type { SingleOption } from "../utils";
-import type { ElectronEnvironment } from "./electron.setup";
-import type { createLogger as createLoggerFactory } from "./logger.setup";
+﻿import type { SingleOption } from "../../support/electron-options";
+import type { ElectronEnvironment } from "../support/electron-environment";
+import type { createLogger as createLoggerFactory } from "../support/logger";
 import type {
-  createNormalTestingContext as createNormalTestingContextFactory,
   createElectronTestingContext as createElectronTestingContextFactory,
-} from "./context.setup";
+} from "../support/context";
 
 export {};
 
@@ -19,17 +18,9 @@ declare global {
   ) => Promise<ElectronEnvironment>;
 
   var createLogger: () => ReturnType<typeof createLoggerFactory>;
-  var createNormalTestingContext: () => Promise<
-    ReturnType<typeof createNormalTestingContextFactory>
-  >;
   var createElectronTestingContext: (
     environment: ElectronEnvironment,
   ) => Promise<ReturnType<typeof createElectronTestingContextFactory>>;
-  var readMockAssets: (mockingName: string) => Promise<string>;
-  var comopseTestingContext: (
-    browser: puppeteer.Browser,
-    page: puppeteer.Page,
-  ) => Promise<TestingContext>;
 
   var teardownTestRuntime: (runtime?: {
     testingContext?: { teardown: () => Promise<boolean> };

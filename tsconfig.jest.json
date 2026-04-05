@@ -9,12 +9,12 @@
     "outDir": "dist-jest",
     "isolatedModules": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": [
     "node_modules",
     "dist",
     "dist-electron",
     "dist-electron-test",
-    "src/__tests__/deprecated"
+    "tests/archive"
   ]
 }

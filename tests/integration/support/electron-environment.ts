@@ -1,5 +1,5 @@
-import { spawn, ChildProcess } from "child_process";
-import { ElectronOptions, SingleOption } from "../utils";
+﻿import { spawn, ChildProcess } from "child_process";
+import { ElectronOptions, SingleOption } from "../../support/electron-options";
 
 const electronPath = require("electron") as unknown as string;
 
@@ -75,7 +75,9 @@ export class ElectronEnvironment {
     const child = spawn(electronPath, args, {
       env: {
         ...this._env,
-        TEST_ELECTRON_OPTIONS_JSON: JSON.stringify(this._electronOptions.toJSON()),
+        TEST_ELECTRON_OPTIONS_JSON: JSON.stringify(
+          this._electronOptions.toJSON(),
+        ),
       },
       stdio: ["ignore", "pipe", "pipe"],
     });
