@@ -10,8 +10,11 @@ import {
   GOOGLE_MAPS_PLACE_LINK_SELECTOR,
   waitForGoogleMapsPlaceLinks,
 } from "@tests/integration/support/google-maps";
+import { shouldRunFullLiveGoogleMapsTests } from "@tests/integration/support/live-google-maps";
 import { PuppeteerElementHandle } from "@src/2_infrastructure/puppeteer/PuppeteerElementHandle";
 import { PuppeteerPageHandle } from "@src/2_infrastructure/puppeteer/PuppeteerPageHandle";
+
+const itFullLiveGoogleMaps = shouldRunFullLiveGoogleMapsTests ? it : it.skip;
 
 describe("PuppeteerElementHandle - Google Maps search results", () => {
   let searchResultPanelHandle: IElementHandle;
@@ -55,18 +58,21 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
       expect(resultItemElement).toBeDefined();
     });
 
-    it("throws Not Found error when the selector is invalid", async () => {
-      const selector = 'span[data-testid="khong-ton-tai"]';
-      const pageHandle = new PuppeteerPageHandle(testingContext.page);
+    itFullLiveGoogleMaps(
+      "throws Not Found error when the selector is invalid",
+      async () => {
+        const selector = 'span[data-testid="khong-ton-tai"]';
+        const pageHandle = new PuppeteerPageHandle(testingContext.page);
 
-      await expect(pageHandle.find(selector)).rejects.toThrow(
-        `Not found: ${selector}`,
-      );
-    });
+        await expect(pageHandle.find(selector)).rejects.toThrow(
+          `Not found: ${selector}`,
+        );
+      },
+    );
   });
 
   describe("findAll()", () => {
-    it("result items when the selector is valid", async () => {
+    itFullLiveGoogleMaps("result items when the selector is valid", async () => {
       const selector = GOOGLE_MAPS_PLACE_LINK_SELECTOR;
 
       const resultPlaceHandles =
@@ -268,5 +274,3 @@ describe("PuppeteerElementHandle - DOM fixture", () => {
     });
   });
 });
-
-

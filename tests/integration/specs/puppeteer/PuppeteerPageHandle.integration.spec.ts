@@ -7,8 +7,11 @@ import {
   GOOGLE_MAPS_PLACE_LINK_SELECTOR,
   waitForGoogleMapsPlaceLinks,
 } from "@tests/integration/support/google-maps";
+import { shouldRunFullLiveGoogleMapsTests } from "@tests/integration/support/live-google-maps";
 
 jest.setTimeout(60000);
+
+const itFullLiveGoogleMaps = shouldRunFullLiveGoogleMapsTests ? it : it.skip;
 
 describe("PuppeteerPageHandle - Google Maps home", () => {
   let testingContext: Awaited<
@@ -34,14 +37,17 @@ describe("PuppeteerPageHandle - Google Maps home", () => {
   });
 
   describe("find()", () => {
-    it("throws Not found when the selector does not match any element", async () => {
-      const selector = 'input[data-testid="khong-ton-tai"]';
-      const pageHandle = new PuppeteerPageHandle(testingContext.page);
+    itFullLiveGoogleMaps(
+      "throws Not found when the selector does not match any element",
+      async () => {
+        const selector = 'input[data-testid="khong-ton-tai"]';
+        const pageHandle = new PuppeteerPageHandle(testingContext.page);
 
-      await expect(pageHandle.find(selector)).rejects.toThrow(
-        `Not found: ${selector}`,
-      );
-    });
+        await expect(pageHandle.find(selector)).rejects.toThrow(
+          `Not found: ${selector}`,
+        );
+      },
+    );
 
     it("returns the search input when the selector is valid", async () => {
       const selector = 'input[role="combobox"]';
@@ -146,5 +152,3 @@ describe("PuppeteerPageHandle - DOM fixture", () => {
     });
   });
 });
-
-

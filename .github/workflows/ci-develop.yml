@@ -21,7 +21,7 @@ jobs:
       CI: "true"
       NODE_ENV: test
       PUPPETEER_HEADLESS: "true"
-      RUN_LIVE_GOOGLE_MAPS_TESTS: "0"
+      RUN_FULL_LIVE_GOOGLE_MAPS_TESTS: "0"
       TEST_GOOGLE_MAPS_SEARCH_KEYWORD: "starbucks washington dc"
       TEST_ELECTRON_WINDOW_SHOW: "false"
     steps:
