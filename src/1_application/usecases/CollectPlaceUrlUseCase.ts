@@ -45,6 +45,12 @@ export class CollectPlaceUrlUseCase {
     return resultPanelHandle;
   }
 
+  private async waitAfterScroll(settleDelayMs?: number): Promise<void> {
+    if (!settleDelayMs || settleDelayMs <= 0) return;
+
+    await new Promise((resolve) => setTimeout(resolve, settleDelayMs));
+  }
+
   async execute(
     resultPanelSelector: string,
     placeCardSelector: string,
@@ -85,6 +91,7 @@ export class CollectPlaceUrlUseCase {
         break;
 
       await resultPanelHandle.scroll(scrollOptions);
+      await this.waitAfterScroll(scrollOptions.settleDelayMs);
     }
 
     callback();

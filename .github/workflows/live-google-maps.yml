@@ -50,6 +50,7 @@ jobs:
       PUPPETEER_HEADLESS: "true"
       RUN_FULL_LIVE_GOOGLE_MAPS_TESTS: "1"
       TEST_GOOGLE_MAPS_SEARCH_KEYWORD: "starbucks washington dc"
+      TEST_GOOGLE_MAPS_SHORT_SEARCH_KEYWORD: "theatre washington dc"
       TEST_ACCEPT_LANGUAGE: "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7"
       TEST_ELECTRON_WINDOW_SHOW: "false"
       GOOGLE_MAPS_DEBUG_DIR: artifacts\\google-maps

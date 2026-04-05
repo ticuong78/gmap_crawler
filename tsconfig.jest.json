@@ -7,11 +7,7 @@
     "composite": true,
     "types": ["jest", "node"],
     "outDir": "dist-jest",
-    "isolatedModules": true,
-    "paths": {
-      "@src/*": ["./src/*"],
-      "@tests/*": ["./tests/*"]
-    }
+    "isolatedModules": true
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": [

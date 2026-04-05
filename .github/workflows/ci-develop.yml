@@ -23,6 +23,7 @@ jobs:
       PUPPETEER_HEADLESS: "true"
       RUN_FULL_LIVE_GOOGLE_MAPS_TESTS: "0"
       TEST_GOOGLE_MAPS_SEARCH_KEYWORD: "starbucks washington dc"
+      TEST_GOOGLE_MAPS_SHORT_SEARCH_KEYWORD: "theatre washington dc"
       TEST_ELECTRON_WINDOW_SHOW: "false"
     steps:
       - name: Checkout repository
