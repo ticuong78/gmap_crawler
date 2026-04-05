@@ -1,12 +1,8 @@
-name: Develop CI
+name: Stable CI
 
 on:
   push:
-    branches:
-      - develop
   pull_request:
-    branches:
-      - develop
   workflow_dispatch:
 
 permissions:
@@ -89,4 +85,3 @@ jobs:
       - name: Run integration tests
         shell: cmd
         run: yarn jest --selectProjects integration --runInBand --detectOpenHandles
-
