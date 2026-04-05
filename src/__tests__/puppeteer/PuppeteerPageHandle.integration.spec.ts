@@ -3,14 +3,16 @@ jest.setTimeout(30000);
 import { PuppeteerPageHandle } from "../../2_infrastructure/puppeteer/PuppeteerPageHandle";
 
 describe("PuppeteerPageHandle - Google Maps home", () => {
-  let testingContext: Awaited<ReturnType<typeof globalThis.createTestingContext>>;
-  let electronEnv: Awaited<ReturnType<
-    typeof globalThis.createAndSetupElectronEnvironment
-  >>;
+  let testingContext: Awaited<
+    ReturnType<typeof globalThis.createElectronTestingContext>
+  >;
+  let electronEnv: Awaited<
+    ReturnType<typeof globalThis.createAndSetupElectronEnvironment>
+  >;
 
   beforeAll(async () => {
     electronEnv = await globalThis.createAndSetupElectronEnvironment();
-    testingContext = await globalThis.createTestingContext(electronEnv);
+    testingContext = await globalThis.createElectronTestingContext(electronEnv);
     await testingContext.page.goto(globalThis.GOOGLE_MAP_URL);
   });
 
@@ -41,14 +43,16 @@ describe("PuppeteerPageHandle - Google Maps home", () => {
 });
 
 describe("PuppeteerPageHandle - Google Maps search results", () => {
-  let testingContext: Awaited<ReturnType<typeof globalThis.createTestingContext>>;
-  let electronEnv: Awaited<ReturnType<
-    typeof globalThis.createAndSetupElectronEnvironment
-  >>;
+  let testingContext: Awaited<
+    ReturnType<typeof globalThis.createElectronTestingContext>
+  >;
+  let electronEnv: Awaited<
+    ReturnType<typeof globalThis.createAndSetupElectronEnvironment>
+  >;
 
   beforeAll(async () => {
     electronEnv = await globalThis.createAndSetupElectronEnvironment();
-    testingContext = await globalThis.createTestingContext(electronEnv);
+    testingContext = await globalThis.createElectronTestingContext(electronEnv);
     await testingContext.page.goto(globalThis.GOOGLE_MAPS_QUERY_SEARCH_URL);
   });
 

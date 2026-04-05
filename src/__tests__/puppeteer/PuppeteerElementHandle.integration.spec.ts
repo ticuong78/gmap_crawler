@@ -1,29 +1,47 @@
 jest.setTimeout(30000);
 
 import { IElementHandle } from "../../1_application/ports/IElementHandle";
-
+import {
+  createNormalTestingContext,
+  type TestingContext,
+} from "../setup/context.setup";
 import { PuppeteerElementHandle } from "../../2_infrastructure/puppeteer/PuppeteerElementHandle";
 import { PuppeteerPageHandle } from "../../2_infrastructure/puppeteer/PuppeteerPageHandle";
 
 describe("PuppeteerElementHandle - Google Maps search results", () => {
   let searchResultPanelHandle: IElementHandle;
   let placeHandles: IElementHandle[];
-  let testingContext: Awaited<ReturnType<typeof globalThis.createTestingContext>>;
-  let electronEnv: Awaited<ReturnType<
-    typeof globalThis.createAndSetupElectronEnvironment
-  >>;
+  let testingContext: Awaited<
+    ReturnType<typeof globalThis.createElectronTestingContext>
+  >;
+  let electronEnv: Awaited<
+    ReturnType<typeof globalThis.createAndSetupElectronEnvironment>
+  >;
 
   beforeAll(async () => {
     electronEnv = await globalThis.createAndSetupElectronEnvironment();
-    testingContext = await globalThis.createTestingContext(electronEnv);
+    testingContext = await globalThis.createElectronTestingContext(electronEnv);
     await testingContext.page.goto(globalThis.GOOGLE_MAPS_QUERY_SEARCH_URL);
 
-    const selector = `div[role="feed"][aria-label*="${globalThis.SEARCH_KEYWORD}"]`;
-    const handle = await testingContext.page.waitForSelector(selector, {
-      timeout: 10000,
-    });
+    const resultPanelSelector = `div[role="feed"][aria-label="Kết quả cho ${globalThis.SEARCH_KEYWORD}"]`;
+    const handle = await testingContext.page.waitForSelector(
+      resultPanelSelector,
+      {
+        timeout: 10000,
+      },
+    );
+
+    await testingContext.page.waitForSelector(
+      'div[role="article"] a[href*="/maps/place/"][aria-label]',
+      {
+        timeout: 10000,
+      },
+    );
 
     searchResultPanelHandle = new PuppeteerElementHandle(handle);
+    placeHandles = await searchResultPanelHandle.findAll(
+      'div[role="article"] a[href*="/maps/place/"][aria-label]',
+    );
   });
 
   afterAll(async () => {
@@ -54,11 +72,13 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
 
   describe("findAll()", () => {
     it("result items when the selector is valid", async () => {
-      const selector = 'div[role="article"] a[href*="/maps/place/"][aria-label]';
+      const selector =
+        'div[role="article"] a[href*="/maps/place/"][aria-label]';
 
-      placeHandles = await searchResultPanelHandle.findAll(selector);
+      const resultPlaceHandles =
+        await searchResultPanelHandle.findAll(selector);
 
-      expect(placeHandles.length).toBeGreaterThan(0);
+      expect(resultPlaceHandles.length).toBeGreaterThan(0);
     });
   });
 
@@ -84,6 +104,173 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
 
       expect(detailPlace).toBeDefined();
       expect(expectedSamePlaceHandle).toStrictEqual(placeHandle);
+    });
+  });
+});
+
+describe("PuppeteerElementHandle - DOM fixture", () => {
+  let testingContext: TestingContext;
+  let pageHandle: PuppeteerPageHandle;
+
+  beforeAll(async () => {
+    testingContext = await createNormalTestingContext();
+    pageHandle = new PuppeteerPageHandle(testingContext.page);
+    await testingContext.page.setViewport({ width: 1280, height: 720 });
+  });
+
+  beforeEach(async () => {
+    await testingContext.page.setViewport({ width: 1280, height: 720 });
+    await testingContext.page.setContent(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <body style="margin: 0; padding: 16px;">
+          <input id="type-target" />
+          <button
+            id="hover-target"
+            data-hovered="false"
+            onmouseover="this.setAttribute('data-hovered', 'true')"
+          >
+            Hover target
+          </button>
+          <div id="text-target" data-role="summary">Hello <span>world</span></div>
+          <div id="visible-box">Visible box</div>
+          <div id="hidden-box" style="display: none;">Hidden box</div>
+          <div
+            id="scrollable-panel"
+            style="height: 120px; overflow-y: auto; border: 1px solid #000;"
+          >
+            <div id="scrollable-content" style="height: 600px;">
+              Scrollable content
+            </div>
+          </div>
+          <div id="above-fold" style="margin-top: 24px; height: 40px;">
+            Above fold
+          </div>
+          <div style="height: 1200px;"></div>
+          <div id="below-fold" style="height: 40px;">Below fold</div>
+        </body>
+      </html>
+    `);
+
+    await testingContext.page.evaluate(() => {
+      window.scrollTo(0, 0);
+    });
+  });
+
+  afterAll(async () => {
+    await testingContext?.teardown();
+  });
+
+  describe("type()", () => {
+    it("types into an input and returns the same handle", async () => {
+      const inputHandle = await pageHandle.find("#type-target");
+
+      const expectedSameInputHandle = await inputHandle.type("kaiserin");
+      const value = await testingContext.page.$eval(
+        "#type-target",
+        (el) => (el as HTMLInputElement).value,
+      );
+
+      expect(value).toBe("kaiserin");
+      expect(expectedSameInputHandle).toStrictEqual(inputHandle);
+    });
+  });
+
+  describe("hover()", () => {
+    it("dispatches hover events and returns the same handle", async () => {
+      const hoverHandle = await pageHandle.find("#hover-target");
+
+      const expectedSameHoverHandle = await hoverHandle.hover();
+      const hovered = await testingContext.page.$eval("#hover-target", (el) =>
+        el.getAttribute("data-hovered"),
+      );
+
+      expect(hovered).toBe("true");
+      expect(expectedSameHoverHandle).toStrictEqual(hoverHandle);
+    });
+  });
+
+  describe("getText()", () => {
+    it("returns the element text content", async () => {
+      const textHandle = await pageHandle.find("#text-target");
+
+      await expect(textHandle.getText()).resolves.toBe("Hello world");
+    });
+  });
+
+  describe("getAttribute()", () => {
+    it("returns the attribute value and empty string when missing", async () => {
+      const textHandle = await pageHandle.find("#text-target");
+
+      await expect(textHandle.getAttribute("data-role")).resolves.toBe(
+        "summary",
+      );
+      await expect(textHandle.getAttribute("data-missing")).resolves.toBe("");
+    });
+  });
+
+  describe("getHTML()", () => {
+    it("returns the element outer HTML", async () => {
+      const textHandle = await pageHandle.find("#text-target");
+
+      const html = await textHandle.getHTML();
+
+      expect(html).toContain('id="text-target"');
+      expect(html).toContain('data-role="summary"');
+      expect(html).toContain("<span>world</span>");
+    });
+  });
+
+  describe("isVisible()", () => {
+    it("distinguishes visible and hidden elements", async () => {
+      const visibleHandle = await pageHandle.find("#visible-box");
+      const hiddenHandle = await pageHandle.find("#hidden-box");
+
+      await expect(visibleHandle.isVisible()).resolves.toBe(true);
+      await expect(hiddenHandle.isVisible()).resolves.toBe(false);
+    });
+  });
+
+  describe("isIntersectingViewport()", () => {
+    it("returns true only when the element is inside the viewport", async () => {
+      const aboveFoldHandle = await pageHandle.find("#above-fold");
+      const belowFoldHandle = await pageHandle.find("#below-fold");
+
+      await expect(aboveFoldHandle.isIntersectingViewport()).resolves.toBe(
+        true,
+      );
+      await expect(belowFoldHandle.isIntersectingViewport()).resolves.toBe(
+        false,
+      );
+    });
+  });
+
+  describe("scroll()", () => {
+    it("scrolls a vertically scrollable element and returns the same handle", async () => {
+      const scrollablePanelHandle = await pageHandle.find("#scrollable-panel");
+      const beforeScrollTop = await testingContext.page.$eval(
+        "#scrollable-panel",
+        (el) => el.scrollTop,
+      );
+
+      const expectedSamePanelHandle = await scrollablePanelHandle.scroll({
+        pixel: 120,
+      });
+      const afterScrollTop = await testingContext.page.$eval(
+        "#scrollable-panel",
+        (el) => el.scrollTop,
+      );
+
+      expect(afterScrollTop).toBeGreaterThan(beforeScrollTop);
+      expect(expectedSamePanelHandle).toStrictEqual(scrollablePanelHandle);
+    });
+
+    it("throws when the handle itself is not vertically scrollable", async () => {
+      const nonScrollableHandle = await pageHandle.find("#scrollable-content");
+
+      await expect(nonScrollableHandle.scroll({ pixel: 120 })).rejects.toThrow(
+        "Element is not vertically scrollable",
+      );
     });
   });
 });
