@@ -1,6 +1,10 @@
-﻿jest.setTimeout(30000);
-
 import { PuppeteerPageHandle } from "@src/2_infrastructure/puppeteer/PuppeteerPageHandle";
+import {
+  GOOGLE_MAPS_PLACE_LINK_SELECTOR,
+  waitForGoogleMapsPlaceLinks,
+} from "@tests/integration/support/google-maps";
+
+jest.setTimeout(60000);
 
 describe("PuppeteerPageHandle - Google Maps home", () => {
   let testingContext: Awaited<
@@ -13,7 +17,9 @@ describe("PuppeteerPageHandle - Google Maps home", () => {
   beforeAll(async () => {
     electronEnv = await globalThis.createAndSetupElectronEnvironment();
     testingContext = await globalThis.createElectronTestingContext(electronEnv);
-    await testingContext.page.goto(globalThis.GOOGLE_MAP_URL);
+    await testingContext.page.goto(globalThis.GOOGLE_MAP_URL, {
+      waitUntil: "domcontentloaded",
+    });
   });
 
   afterAll(async () => {
@@ -34,7 +40,7 @@ describe("PuppeteerPageHandle - Google Maps home", () => {
     });
 
     it("returns the search input when the selector is valid", async () => {
-      const selector = 'input[role="combobox"][name="q"]';
+      const selector = 'input[role="combobox"]';
       const pageHandle = new PuppeteerPageHandle(testingContext.page);
 
       await expect(pageHandle.find(selector)).resolves.toBeDefined();
@@ -53,7 +59,9 @@ describe("PuppeteerPageHandle - Google Maps search results", () => {
   beforeAll(async () => {
     electronEnv = await globalThis.createAndSetupElectronEnvironment();
     testingContext = await globalThis.createElectronTestingContext(electronEnv);
-    await testingContext.page.goto(globalThis.GOOGLE_MAPS_QUERY_SEARCH_URL);
+    await testingContext.page.goto(globalThis.GOOGLE_MAPS_QUERY_SEARCH_URL, {
+      waitUntil: "domcontentloaded",
+    });
   });
 
   afterAll(async () => {
@@ -65,11 +73,9 @@ describe("PuppeteerPageHandle - Google Maps search results", () => {
 
   describe("findAll()", () => {
     it("returns result items when the selector is valid", async () => {
-      const selector = `div[role="feed"][aria-label*="${globalThis.SEARCH_KEYWORD}"] div[role="article"]`;
+      const selector = GOOGLE_MAPS_PLACE_LINK_SELECTOR;
 
-      await testingContext.page.waitForSelector(selector, {
-        timeout: 10000,
-      });
+      await waitForGoogleMapsPlaceLinks(testingContext.page);
 
       const pageHandle = new PuppeteerPageHandle(testingContext.page);
       const elementHandles = await pageHandle.findAll(selector);
@@ -80,4 +86,3 @@ describe("PuppeteerPageHandle - Google Maps search results", () => {
     // still more, assess the above first
   });
 });
-

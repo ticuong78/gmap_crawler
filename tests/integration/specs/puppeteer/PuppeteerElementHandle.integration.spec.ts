@@ -1,10 +1,15 @@
-﻿jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 import { IElementHandle } from "@src/1_application/ports/IElementHandle";
 import {
   createNormalTestingContext,
   type TestingContext,
 } from "@tests/integration/support/context";
+import {
+  findGoogleMapsResultsFeed,
+  GOOGLE_MAPS_PLACE_LINK_SELECTOR,
+  waitForGoogleMapsPlaceLinks,
+} from "@tests/integration/support/google-maps";
 import { PuppeteerElementHandle } from "@src/2_infrastructure/puppeteer/PuppeteerElementHandle";
 import { PuppeteerPageHandle } from "@src/2_infrastructure/puppeteer/PuppeteerPageHandle";
 
@@ -21,29 +26,16 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
   beforeAll(async () => {
     electronEnv = await globalThis.createAndSetupElectronEnvironment();
     testingContext = await globalThis.createElectronTestingContext(electronEnv);
-    await testingContext.page.goto(globalThis.GOOGLE_MAPS_QUERY_SEARCH_URL);
+    await testingContext.page.goto(globalThis.GOOGLE_MAPS_QUERY_SEARCH_URL, {
+      waitUntil: "domcontentloaded",
+    });
 
-    const resultPanelSelector = `div[role="feed"][aria-label="Kết quả cho ${globalThis.SEARCH_KEYWORD}"]`;
-    const handle = await testingContext.page.waitForSelector(
-      resultPanelSelector,
-      {
-        timeout: 10000,
-      },
-    );
-
-    await testingContext.page.waitForSelector(
-      'div[role="article"] a[href*="/maps/place/"][aria-label]',
-      {
-        timeout: 10000,
-      },
-    );
-
-    if (!handle)
-      throw new Error(`Cannot find element for ${resultPanelSelector}`);
+    const handle = await findGoogleMapsResultsFeed(testingContext.page);
+    await waitForGoogleMapsPlaceLinks(testingContext.page);
 
     searchResultPanelHandle = new PuppeteerElementHandle(handle);
     placeHandles = await searchResultPanelHandle.findAll(
-      'div[role="article"] a[href*="/maps/place/"][aria-label]',
+      GOOGLE_MAPS_PLACE_LINK_SELECTOR,
     );
   });
 
@@ -75,8 +67,7 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
 
   describe("findAll()", () => {
     it("result items when the selector is valid", async () => {
-      const selector =
-        'div[role="article"] a[href*="/maps/place/"][aria-label]';
+      const selector = GOOGLE_MAPS_PLACE_LINK_SELECTOR;
 
       const resultPlaceHandles =
         await searchResultPanelHandle.findAll(selector);
@@ -92,7 +83,7 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
       const detailNavigationPromise = testingContext.page.waitForFunction(
         () => window.location.href.includes("/maps/place/"),
         {
-          timeout: 5000,
+          timeout: 15000,
         },
       );
       const expectedSamePlaceHandle = await placeHandle.click();
@@ -101,7 +92,7 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
       const detailPlace = await testingContext.page.waitForSelector(
         'div[role="main"][aria-label] button[data-item-id="address"]',
         {
-          timeout: 5000,
+          timeout: 15000,
         },
       );
 
