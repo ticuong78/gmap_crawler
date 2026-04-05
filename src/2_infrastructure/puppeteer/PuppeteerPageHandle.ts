@@ -12,6 +12,16 @@ export class PuppeteerPageHandle implements IPageHandle {
     return new PuppeteerElementHandle(el);
   }
 
+  async goto(url: string): Promise<boolean> {
+    try {
+      await this.page.goto(url);
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async findAll(selector: string): Promise<IElementHandle[]> {
     const els = await this.page.$$(selector);
     return els.map((el) => new PuppeteerElementHandle(el));
