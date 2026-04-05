@@ -1,23 +1,84 @@
-import { LogLevel } from "../enums/LogLevel";
-import { ClickElementExecutionOptions } from "../options/ClickElementExecutionOptions";
-import { LookUpElementExecutionOptions } from "../options/LookUpElementExecutionOptions";
+import { Queue } from "../data_structure/Queue";
 import { IElementHandle } from "../ports/IElementHandle";
 import { ILogger } from "../ports/ILogger";
+import { IPageHandle } from "../ports/IPageHandle";
 
 // export type CollectPlaceInfoExecutionOptions = {
 //   click?: ClickElementExecutionOptions;
 //   find?: LookUpElementExecutionOptions;
 // };
 
-export class CollectPlaceInfoUseCase {
+// steps:
+// 1. boot up the page
+// 2. Collect URL from the opened page
+// 3. Scrape information from those pages
+
+export class CollectPlaceUrlUseCase {
   constructor(
     private readonly _logger: ILogger,
-    private readonly _elementHandle: IElementHandle,
+    private readonly _pageHandle: IPageHandle,
+    private readonly _urlQueue: Queue<string>,
   ) {}
 
+  private async searchForManyElements(
+    rootElement: {
+      findAll: (selector: string) => Promise<IElementHandle[]>;
+    },
+    resultPanelSelector: string,
+  ): Promise<IElementHandle[]> {
+    // goto before access this function
+    const resultPanelHandle = await rootElement.findAll(resultPanelSelector);
+
+    return resultPanelHandle;
+  }
+
+  private async searchForElement(
+    rootElement: {
+      find: (selector: string) => Promise<IElementHandle>;
+    },
+    resultPanelSelector: string,
+  ): Promise<IElementHandle> {
+    // goto before access this function
+    const resultPanelHandle = await rootElement.find(resultPanelSelector);
+
+    return resultPanelHandle;
+  }
+
   async execute(
-    placeSelector: string,
-    panelSelector: string,
-    // options?: CollectPlaceInfoExecutionOptions,
-  ): Promise<void> {}
+    resultPanelSelector: string,
+    placeCardSelector: string,
+    placeUrlSecltor: string, // xpath///a[@aria-label and @href*="maps/place"]
+    stopSignalSelector: string, // Bạn đã xem hết danh sách này.
+    callback: Function,
+  ): Promise<void> {
+    const resultPanelHandle = await this.searchForElement(
+      // only one panel
+      this._pageHandle,
+      resultPanelSelector,
+    );
+
+    while (true) {
+      const placeHandles: IElementHandle[] = await this.searchForManyElements(
+        resultPanelHandle,
+        placeCardSelector,
+      );
+
+      placeHandles.forEach(async (handle) => {
+        const anchor = await this.searchForElement(handle, placeUrlSecltor);
+        const url = await anchor.getAttribute("href");
+
+        this._urlQueue.enqueue(url);
+      });
+
+      const stopSignalHandle = await this.searchForElement(
+        resultPanelHandle,
+        stopSignalSelector,
+      );
+
+      if (stopSignalHandle && (await stopSignalHandle.isIntersectingViewport()))
+        break;
+    }
+
+    callback();
+  }
 }
