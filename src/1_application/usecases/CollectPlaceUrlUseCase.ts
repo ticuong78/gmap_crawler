@@ -1,4 +1,5 @@
 import { Queue } from "../data_structure/Queue";
+import { ScrollExecutionOptions } from "../options/ScrollExecutionOptions";
 import { IElementHandle } from "../ports/IElementHandle";
 import { ILogger } from "../ports/ILogger";
 import { IPageHandle } from "../ports/IPageHandle";
@@ -49,6 +50,9 @@ export class CollectPlaceUrlUseCase {
     placeCardSelector: string,
     placeUrlSecltor: string, // xpath///a[@aria-label and @href*="maps/place"]
     stopSignalSelector: string, // Bạn đã xem hết danh sách này.
+    scrollOptions: ScrollExecutionOptions = {
+      pixel: 1000,
+    },
     callback: Function,
   ): Promise<void> {
     const resultPanelHandle = await this.searchForElement(
@@ -63,12 +67,14 @@ export class CollectPlaceUrlUseCase {
         placeCardSelector,
       );
 
-      placeHandles.forEach(async (handle) => {
-        const anchor = await this.searchForElement(handle, placeUrlSecltor);
-        const url = await anchor.getAttribute("href");
+      await Promise.all(
+        placeHandles.map(async (handle) => {
+          const anchor = await this.searchForElement(handle, placeUrlSecltor);
+          const url = await anchor.getAttribute("href");
 
-        this._urlQueue.enqueue(url);
-      });
+          this._urlQueue.enqueue(url);
+        }),
+      );
 
       const stopSignalHandle = await this.searchForElement(
         resultPanelHandle,
@@ -77,6 +83,8 @@ export class CollectPlaceUrlUseCase {
 
       if (stopSignalHandle && (await stopSignalHandle.isIntersectingViewport()))
         break;
+
+      await resultPanelHandle.scroll(scrollOptions);
     }
 
     callback();

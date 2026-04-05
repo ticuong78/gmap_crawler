@@ -9,7 +9,7 @@ export interface IElementHandle {
   click(): Promise<this>;
   type(text: string): Promise<this>;
   hover(): Promise<this>;
-  scroll(options: ScrollExecutionOptions): Promise<this>;
+  scroll(options?: ScrollExecutionOptions): Promise<this>;
 
   // Extraction
   getText(): Promise<string>;
