@@ -1,32 +1,33 @@
-name: Develop CI
+name: Live Google Maps
 
 on:
   push:
     branches:
       - develop
-  pull_request:
-    branches:
-      - develop
   workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *"
 
 permissions:
   contents: read
 
 concurrency:
-  group: develop-ci-${{ github.workflow }}-${{ github.ref }}
+  group: live-google-maps-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Typecheck and test
+  live-google-maps:
+    name: Live Google Maps integration
     runs-on: windows-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
     env:
       CI: "true"
       NODE_ENV: test
       PUPPETEER_HEADLESS: "true"
-      RUN_LIVE_GOOGLE_MAPS_TESTS: "0"
+      RUN_LIVE_GOOGLE_MAPS_TESTS: "1"
+      TEST_ACCEPT_LANGUAGE: "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7"
       TEST_ELECTRON_WINDOW_SHOW: "false"
+      GOOGLE_MAPS_DEBUG_DIR: artifacts\\google-maps
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -70,23 +71,18 @@ jobs:
 
           "PUPPETEER_EXECUTABLE_PATH=$($candidates[0])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Typecheck
-        shell: cmd
-        run: yarn tsc -p tsconfig.json --noEmit
-
-      - name: Run unit tests
-        shell: cmd
-        run: yarn test:unit
-
-      - name: Clean Electron test build output
-        shell: cmd
-        run: yarn clean:test
-
       - name: Build Electron integration runtime
         shell: cmd
         run: yarn build:test-main
 
-      - name: Run integration tests
+      - name: Run live Google Maps integration tests
         shell: cmd
         run: yarn jest --selectProjects integration --runInBand --detectOpenHandles
 
+      - name: Upload Google Maps debug artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-google-maps-debug-${{ github.run_id }}
+          path: artifacts/google-maps
+          if-no-files-found: ignore

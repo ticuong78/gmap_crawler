@@ -11,6 +11,8 @@ export type TestingContext = {
 
 const CONNECTION_RETRY_DELAY_MS = 250;
 const CONNECTION_RETRY_COUNT = 20;
+const DEFAULT_ACCEPT_LANGUAGE =
+  process.env.TEST_ACCEPT_LANGUAGE ?? "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7";
 const NORMAL_BROWSER_EXECUTABLE_PATHS = [
   process.env.PUPPETEER_EXECUTABLE_PATH,
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -29,6 +31,12 @@ function resolvePuppeteerHeadlessMode(): boolean {
 
 async function delay(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function configureTestingPage(page: puppeteer.Page): Promise<void> {
+  await page.setExtraHTTPHeaders({
+    "Accept-Language": DEFAULT_ACCEPT_LANGUAGE,
+  });
 }
 
 function resolveNormalBrowserExecutablePath(): string {
@@ -74,6 +82,8 @@ export async function createElectronTestingContext(
       const pages = await browser.pages();
       const page = pages[0] ?? (await browser.newPage());
 
+      await configureTestingPage(page);
+
       return {
         browser,
         page,
@@ -97,6 +107,8 @@ export async function createNormalTestingContext(): Promise<TestingContext> {
     headless: resolvePuppeteerHeadlessMode(),
   });
   const page = await browser.newPage();
+
+  await configureTestingPage(page);
 
   return {
     browser,
