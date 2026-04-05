@@ -1,4 +1,4 @@
-﻿import * as puppeteer from "puppeteer-core";
+import * as puppeteer from "puppeteer-core";
 import { existsSync } from "fs";
 import { ElectronEnvironment } from "@tests/integration/support/electron-environment";
 
@@ -18,6 +18,14 @@ const NORMAL_BROWSER_EXECUTABLE_PATHS = [
   "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
 ].filter((candidate): candidate is string => Boolean(candidate));
+
+function resolvePuppeteerHeadlessMode(): boolean {
+  const configuredValue = process.env.PUPPETEER_HEADLESS?.trim().toLowerCase();
+
+  if (!configuredValue) return true;
+
+  return !["0", "false", "no", "off"].includes(configuredValue);
+}
 
 async function delay(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
@@ -86,7 +94,7 @@ export async function createElectronTestingContext(
 export async function createNormalTestingContext(): Promise<TestingContext> {
   const browser = await puppeteer.launch({
     executablePath: resolveNormalBrowserExecutablePath(),
-    headless: false,
+    headless: resolvePuppeteerHeadlessMode(),
   });
   const page = await browser.newPage();
 
@@ -96,4 +104,3 @@ export async function createNormalTestingContext(): Promise<TestingContext> {
     teardown: () => tearDownTestingContext(browser, page),
   };
 }
-

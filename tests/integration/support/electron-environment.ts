@@ -1,4 +1,4 @@
-﻿import { spawn, ChildProcess } from "child_process";
+import { spawn, ChildProcess } from "child_process";
 import { ElectronOptions, SingleOption } from "@tests/support/electron-options";
 
 const electronPath = require("electron") as unknown as string;
@@ -78,6 +78,10 @@ export class ElectronEnvironment {
         TEST_ELECTRON_OPTIONS_JSON: JSON.stringify(
           this._electronOptions.toJSON(),
         ),
+        TEST_ELECTRON_WINDOW_SHOW:
+          this._env.TEST_ELECTRON_WINDOW_SHOW ??
+          this._env.SHOW_ELECTRON_WINDOWS ??
+          "false",
       },
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -149,4 +153,5 @@ export class ElectronEnvironment {
     });
   }
 }
+
 

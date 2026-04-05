@@ -28,6 +28,33 @@ function loadElectronOptions(): SingleOption[] {
   }
 }
 
+function parseBooleanEnv(
+  value: string | undefined,
+  defaultValue: boolean,
+): boolean {
+  if (value === undefined) return defaultValue;
+
+  const normalizedValue = value.trim().toLowerCase();
+
+  if (["1", "true", "yes", "on"].includes(normalizedValue)) {
+    return true;
+  }
+
+  if (["0", "false", "no", "off"].includes(normalizedValue)) {
+    return false;
+  }
+
+  return defaultValue;
+}
+
+function resolveWindowShowOption(): boolean {
+  return parseBooleanEnv(
+    process.env.TEST_ELECTRON_WINDOW_SHOW ??
+      process.env.SHOW_ELECTRON_WINDOWS,
+    false,
+  );
+}
+
 for (const option of loadElectronOptions()) {
   const switchName = toSwitchName(option.key);
 
@@ -46,7 +73,7 @@ for (const option of loadElectronOptions()) {
 
 app.whenReady().then(() => {
   const win = new BrowserWindow({
-    show: true,
+    show: resolveWindowShowOption(),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -61,3 +88,4 @@ app.whenReady().then(() => {
     console.log("ELECTRON_READY");
   });
 });
+

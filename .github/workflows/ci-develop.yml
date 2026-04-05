@@ -1,0 +1,90 @@
+name: Develop CI
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: develop-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Typecheck and test
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      CI: "true"
+      NODE_ENV: test
+      PUPPETEER_HEADLESS: "true"
+      TEST_ELECTRON_WINDOW_SHOW: "false"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          package-manager-cache: false
+
+      - name: Enable Corepack
+        shell: cmd
+        run: corepack enable
+
+      - name: Activate Yarn 4.12.0
+        shell: cmd
+        run: corepack prepare yarn@4.12.0 --activate
+
+      - name: Verify Yarn version
+        shell: cmd
+        run: yarn --version
+
+      - name: Install dependencies
+        shell: cmd
+        run: yarn install --immutable
+
+      - name: Resolve browser executable
+        shell: pwsh
+        run: |
+          $candidates = @(
+            $env:PUPPETEER_EXECUTABLE_PATH,
+            "$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
+            "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
+            "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",
+            "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe"
+          ) | Where-Object { $_ -and (Test-Path $_) }
+
+          if (-not $candidates -or $candidates.Count -eq 0) {
+            throw "No supported browser executable found for Puppeteer integration tests."
+          }
+
+          "PUPPETEER_EXECUTABLE_PATH=$($candidates[0])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Typecheck
+        shell: cmd
+        run: yarn tsc -p tsconfig.json --noEmit
+
+      - name: Run unit tests
+        shell: cmd
+        run: yarn test:unit
+
+      - name: Clean Electron test build output
+        shell: cmd
+        run: yarn clean:test
+
+      - name: Build Electron integration runtime
+        shell: cmd
+        run: yarn build:test-main
+
+      - name: Run integration tests
+        shell: cmd
+        run: yarn jest --selectProjects integration --runInBand --detectOpenHandles
