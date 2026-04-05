@@ -1,6 +1,9 @@
 import * as path from "path";
 import { SingleOption } from "../utils";
-import { createTestingContext } from "./context.setup";
+import {
+  comopseTestingContext,
+  createElectronTestingContext,
+} from "./context.setup";
 import { createElectronEnvironment } from "./electron.setup";
 import { createLogger } from "./logger.setup";
 
@@ -15,11 +18,13 @@ const electronOptions: SingleOption[] = [
 ];
 
 export async function teardownTestRuntime(runtime?: {
-  testingContext?: { teardown?: () => Promise<void> | void };
-  electronEnvironment?: { teardown?: () => Promise<number> | Promise<void> | void };
+  testingContext?: { teardown: () => Promise<boolean> };
+  electronEnvironment?: {
+    teardown: () => Promise<number>;
+  };
 }) {
-  await runtime?.testingContext?.teardown?.();
-  await runtime?.electronEnvironment?.teardown?.();
+  await runtime?.testingContext?.teardown();
+  await runtime?.electronEnvironment?.teardown();
 }
 
 export default async function setupGlobals() {
@@ -41,8 +46,9 @@ export default async function setupGlobals() {
 
     return environment;
   };
-  globalThis.createTestingContext = createTestingContext;
+  globalThis.createElectronTestingContext = createElectronTestingContext;
   globalThis.createLogger = createLogger;
+  globalThis.comopseTestingContext = comopseTestingContext;
   globalThis.teardownTestRuntime = teardownTestRuntime;
 }
 

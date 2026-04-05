@@ -1,19 +1,70 @@
 import * as puppeteer from "puppeteer-core";
 import { ElectronEnvironment } from "./electron.setup";
+import { existsSync, readFileSync } from "fs";
+import * as path from "path";
 
 export type TestingContext = {
   browser: puppeteer.Browser;
   page: puppeteer.Page;
+
+  teardown: () => Promise<boolean>;
 };
 
 const CONNECTION_RETRY_DELAY_MS = 250;
 const CONNECTION_RETRY_COUNT = 20;
+const NORMAL_BROWSER_EXECUTABLE_PATHS = [
+  process.env.PUPPETEER_EXECUTABLE_PATH,
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+].filter((candidate): candidate is string => Boolean(candidate));
 
 async function delay(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function createTestingContext(
+function resolveNormalBrowserExecutablePath(): string {
+  const executablePath = NORMAL_BROWSER_EXECUTABLE_PATHS.find((candidate) =>
+    existsSync(candidate),
+  );
+
+  if (!executablePath) {
+    throw new Error(
+      "No supported browser executable found for createNormalTestingContext",
+    );
+  }
+
+  return executablePath;
+}
+
+export async function tearDownTestingContext(
+  browser: puppeteer.Browser,
+  page: puppeteer.Page,
+) {
+  try {
+    await page.close();
+    await browser.close();
+    await browser.disconnect();
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function comopseTestingContext(
+  browser: puppeteer.Browser,
+  page: puppeteer.Page,
+): Promise<TestingContext> {
+  return Promise.resolve({
+    teardown: () => tearDownTestingContext(browser, page),
+    browser,
+    page,
+  });
+}
+
+export async function createElectronTestingContext(
   environment: ElectronEnvironment,
 ): Promise<TestingContext> {
   let lastError: unknown;
@@ -27,7 +78,11 @@ export async function createTestingContext(
       const pages = await browser.pages();
       const page = pages[0] ?? (await browser.newPage());
 
-      return { browser, page };
+      return {
+        browser,
+        page,
+        teardown: () => tearDownTestingContext(browser, page),
+      };
     } catch (error) {
       lastError = error;
 
@@ -38,4 +93,28 @@ export async function createTestingContext(
   }
 
   throw lastError;
+}
+
+export async function createNormalTestingContext(): Promise<TestingContext> {
+  const browser = await puppeteer.launch({
+    executablePath: resolveNormalBrowserExecutablePath(),
+    headless: false,
+  });
+  const page = await browser.newPage();
+
+  return {
+    browser,
+    page,
+    teardown: () => tearDownTestingContext(browser, page),
+  };
+}
+
+export async function readMockAssets(mockingName: string) {
+  switch (mockingName) {
+    case "mockKaiserinSearchResultPage": {
+      return readFileSync(
+        path.join(__dirname, "../../assets/mockKaiserinSearchResultPage.html"),
+      ).toString();
+    }
+  }
 }

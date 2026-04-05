@@ -10,5 +10,11 @@
     "isolatedModules": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "dist-electron", "dist-electron-test"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-electron",
+    "dist-electron-test",
+    "src/__tests__/deprecated"
+  ]
 }

@@ -25,6 +25,7 @@ const config: Config = {
       transform: tsJestTransform,
       setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup/jest.setup.ts"],
       testMatch: ["<rootDir>/src/__tests__/**/*.integration.spec.ts"],
+      testPathIgnorePatterns: ["<rootDir>/src/__tests__/deprecated"],
     },
   ],
 };
