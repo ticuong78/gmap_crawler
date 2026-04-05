@@ -1,9 +1,7 @@
-﻿import type { SingleOption } from "../../support/electron-options";
-import type { ElectronEnvironment } from "../support/electron-environment";
-import type { createLogger as createLoggerFactory } from "../support/logger";
-import type {
-  createElectronTestingContext as createElectronTestingContextFactory,
-} from "../support/context";
+﻿import type { SingleOption } from "@tests/support/electron-options";
+import type { ElectronEnvironment } from "@tests/integration/support/electron-environment";
+import type { createLogger as createLoggerFactory } from "@tests/integration/support/logger";
+import type { createElectronTestingContext as createElectronTestingContextFactory } from "@tests/integration/support/context";
 
 export {};
 
@@ -20,7 +18,7 @@ declare global {
   var createLogger: () => ReturnType<typeof createLoggerFactory>;
   var createElectronTestingContext: (
     environment: ElectronEnvironment,
-  ) => Promise<ReturnType<typeof createElectronTestingContextFactory>>;
+  ) => ReturnType<typeof createElectronTestingContextFactory>;
 
   var teardownTestRuntime: (runtime?: {
     testingContext?: { teardown: () => Promise<boolean> };

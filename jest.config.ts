@@ -16,6 +16,10 @@ const config: Config = {
       displayName: "unit",
       testEnvironment: "node",
       transform: tsJestTransform,
+      moduleNameMapper: {
+        "^@src/(.*)$": "<rootDir>/src/$1",
+        "^@tests/(.*)$": "<rootDir>/tests/$1",
+      },
       testMatch: ["<rootDir>/tests/unit/**/*.spec.ts"],
       testPathIgnorePatterns: ["<rootDir>/tests/archive"],
     },
@@ -23,6 +27,10 @@ const config: Config = {
       displayName: "integration",
       testEnvironment: "node",
       transform: tsJestTransform,
+      moduleNameMapper: {
+        "^@src/(.*)$": "<rootDir>/src/$1",
+        "^@tests/(.*)$": "<rootDir>/tests/$1",
+      },
       setupFilesAfterEnv: ["<rootDir>/tests/integration/setup/jest.setup.ts"],
       testMatch: ["<rootDir>/tests/integration/specs/**/*.integration.spec.ts"],
       testPathIgnorePatterns: ["<rootDir>/tests/archive"],

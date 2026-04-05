@@ -1,4 +1,4 @@
-﻿import { ElectronOptions } from "../../support/electron-options";
+﻿import { ElectronOptions } from "@tests/support/electron-options";
 
 describe("ElectronOptions", () => {
   describe("get()", () => {
@@ -95,3 +95,4 @@ describe("ElectronOptions", () => {
     });
   });
 });
+

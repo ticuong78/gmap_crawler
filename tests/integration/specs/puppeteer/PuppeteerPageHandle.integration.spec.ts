@@ -1,6 +1,6 @@
 ﻿jest.setTimeout(30000);
 
-import { PuppeteerPageHandle } from "../../../../src/2_infrastructure/puppeteer/PuppeteerPageHandle";
+import { PuppeteerPageHandle } from "@src/2_infrastructure/puppeteer/PuppeteerPageHandle";
 
 describe("PuppeteerPageHandle - Google Maps home", () => {
   let testingContext: Awaited<
@@ -80,3 +80,4 @@ describe("PuppeteerPageHandle - Google Maps search results", () => {
     // still more, assess the above first
   });
 });
+

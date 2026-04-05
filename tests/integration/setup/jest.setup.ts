@@ -1,8 +1,8 @@
 ﻿import * as path from "path";
-import { SingleOption } from "../../support/electron-options";
-import { createElectronTestingContext } from "../support/context";
-import { createElectronEnvironment } from "../support/electron-environment";
-import { createLogger } from "../support/logger";
+import { SingleOption } from "@tests/support/electron-options";
+import { createElectronTestingContext } from "@tests/integration/support/context";
+import { createElectronEnvironment } from "@tests/integration/support/electron-environment";
+import { createLogger } from "@tests/integration/support/logger";
 
 const jestWorkerId = Number(process.env.JEST_WORKER_ID ?? "1");
 const remoteDebuggingPort = 9222 + Math.max(jestWorkerId - 1, 0);
@@ -49,3 +49,4 @@ export default async function setupGlobals() {
 }
 
 setupGlobals();
+

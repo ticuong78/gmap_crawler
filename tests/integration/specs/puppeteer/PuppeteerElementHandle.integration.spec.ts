@@ -1,12 +1,12 @@
 ﻿jest.setTimeout(30000);
 
-import { IElementHandle } from "../../../../src/1_application/ports/IElementHandle";
+import { IElementHandle } from "@src/1_application/ports/IElementHandle";
 import {
   createNormalTestingContext,
   type TestingContext,
-} from "../../support/context";
-import { PuppeteerElementHandle } from "../../../../src/2_infrastructure/puppeteer/PuppeteerElementHandle";
-import { PuppeteerPageHandle } from "../../../../src/2_infrastructure/puppeteer/PuppeteerPageHandle";
+} from "@tests/integration/support/context";
+import { PuppeteerElementHandle } from "@src/2_infrastructure/puppeteer/PuppeteerElementHandle";
+import { PuppeteerPageHandle } from "@src/2_infrastructure/puppeteer/PuppeteerPageHandle";
 
 describe("PuppeteerElementHandle - Google Maps search results", () => {
   let searchResultPanelHandle: IElementHandle;
@@ -37,6 +37,9 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
         timeout: 10000,
       },
     );
+
+    if (!handle)
+      throw new Error(`Cannot find element for ${resultPanelSelector}`);
 
     searchResultPanelHandle = new PuppeteerElementHandle(handle);
     placeHandles = await searchResultPanelHandle.findAll(
@@ -109,7 +112,7 @@ describe("PuppeteerElementHandle - Google Maps search results", () => {
 });
 
 describe("PuppeteerElementHandle - DOM fixture", () => {
-  let testingContext: TestingContext | undefined;
+  let testingContext: TestingContext;
   let pageHandle: PuppeteerPageHandle;
 
   beforeAll(async () => {
@@ -274,4 +277,3 @@ describe("PuppeteerElementHandle - DOM fixture", () => {
     });
   });
 });
-

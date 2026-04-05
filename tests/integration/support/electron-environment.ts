@@ -1,5 +1,5 @@
 ﻿import { spawn, ChildProcess } from "child_process";
-import { ElectronOptions, SingleOption } from "../../support/electron-options";
+import { ElectronOptions, SingleOption } from "@tests/support/electron-options";
 
 const electronPath = require("electron") as unknown as string;
 
@@ -149,3 +149,4 @@ export class ElectronEnvironment {
     });
   }
 }
+

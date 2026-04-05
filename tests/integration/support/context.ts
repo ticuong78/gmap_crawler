@@ -1,6 +1,6 @@
 ﻿import * as puppeteer from "puppeteer-core";
 import { existsSync } from "fs";
-import { ElectronEnvironment } from "./electron-environment";
+import { ElectronEnvironment } from "@tests/integration/support/electron-environment";
 
 export type TestingContext = {
   browser: puppeteer.Browser;
@@ -96,3 +96,4 @@ export async function createNormalTestingContext(): Promise<TestingContext> {
     teardown: () => tearDownTestingContext(browser, page),
   };
 }
+
